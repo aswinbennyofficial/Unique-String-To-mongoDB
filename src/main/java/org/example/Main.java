@@ -1,11 +1,14 @@
 package org.example;
 
+import org.example.Key;
+
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Indexes;
 import org.bson.Document;
+
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -15,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
-        int capacity = 1000000;
+        int capacity = 1000;
         int numThreads = 4;
         int batchSize = 100000;
 
@@ -24,11 +27,11 @@ public class Main {
             hs.add(generateString());
         }
 
-        String uri = "mongodb+srv://willywonka69:cPmIlk57we3nTxXG@cluster1.pkdkagd.mongodb.net/?retryWrites=true&w=majority";
+        String uri = Key.key;
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("urlslugs");
-            MongoCollection<Document> collection = database.getCollection("slugs2");
+            MongoCollection<Document> collection = database.getCollection("slugs3");
 
             collection.createIndex(Indexes.ascending("slugs")); //fieldname
 
