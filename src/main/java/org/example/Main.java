@@ -1,4 +1,3 @@
-
 package org.example;
 
 import com.mongodb.client.MongoClient;
@@ -7,61 +6,57 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Indexes;
 import org.bson.Document;
+
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-    public static void main(String[] args) {
-        int capacity=1000000;
-        HashSet<String> hs=new HashSet<>(capacity);
-        //int i,count=0;
-        while(hs.size()<capacity) {
+    public static void main(String[] args) throws InterruptedException {
+        int capacity = 1000000;
+        int numThreads = 4;
+        int batchSize = 100000;
+
+        HashSet<String> hs = new HashSet<>(capacity);
+        while (hs.size() < capacity) {
             hs.add(generateString());
         }
+
         String uri = "mongodb+srv://willywonka69:cPmIlk57we3nTxXG@cluster1.pkdkagd.mongodb.net/?retryWrites=true&w=majority";
-        //String uri = "mongodb+srv://willywonka987:willyhateshelicopter@cluster1.pkdkagd.mongodb.net/?retryWrites=true&w=majority";
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("urlslugs");
-            MongoCollection<Document> collection = database.getCollection("slugs");
+            MongoCollection<Document> collection = database.getCollection("slugs2");
 
             collection.createIndex(Indexes.ascending("slugs")); //fieldname
 
+            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-            List<Document> documents = new ArrayList<>(capacity);
+            Iterator<String> iterator = hs.iterator();
 
-            for (String item : hs) {
-//                Document document = new Document("field", item);
-//
-
-                Document document = new Document("slug", item)
-                        .append("url", "")
-                        .append("isUsed", false);
-                documents.add(document);
+            while (iterator.hasNext()) {
+                List<Document> documents = new ArrayList<>(batchSize);
+                for (int i = 0; i < batchSize && iterator.hasNext(); i++) {
+                    String item = iterator.next();
+                    Document document = new Document("slug", item)
+                            .append("url", "")
+                            .append("isUsed", false);
+                    documents.add(document);
+                }
+                executor.submit(() -> collection.insertMany(documents));
             }
-            collection.insertMany(documents);
 
+            executor.shutdown();
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         }
-
-/*
-{
-url:{""},
-slug:variable,
-isUsed:false
-
-}
-
- */
-
-
-
     }
+
     public static String generateString() {
         String uuid = UUID.randomUUID().toString();
-        uuid=uuid.replace("-", "").substring(0,6);
+        uuid = uuid.replace("-", "").substring(0, 6);
 
         return uuid;
     }
-
-
 }
