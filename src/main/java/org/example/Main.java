@@ -1,5 +1,6 @@
 
 package org.example;
+import org.example.Key;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -18,8 +19,8 @@ public class Main {
         while(hs.size()<capacity) {
             hs.add(generateString());
         }
-        String uri = "mongodb+srv://willywonka69:cPmIlk57we3nTxXG@cluster1.pkdkagd.mongodb.net/?retryWrites=true&w=majority";
-        //String uri = "mongodb+srv://willywonka987:willyhateshelicopter@cluster1.pkdkagd.mongodb.net/?retryWrites=true&w=majority";
+        String uri = Key.key;
+
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("urlslugs");
