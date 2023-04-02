@@ -29,30 +29,23 @@ public class Main {
             collection.createIndex(Indexes.ascending("slugs")); //fieldname
 
 
-            List<Document> documents = new ArrayList<>(capacity);
+            //List<Document> documents = new ArrayList<>(capacity);
+            List<Document> Arr = new ArrayList<>(capacity);
 
             for (String item : hs) {
-//                Document document = new Document("field", item);
-//
-
+//              Document document = new Document("field", item);
                 Document document = new Document("slug", item)
                         .append("url", "")
                         .append("isUsed", false);
-                documents.add(document);
+                //documents.add(document);
+                Arr.add(document);
             }
-            collection.insertMany(documents);
+            //collection.insertMany(documents);
+            collection.insertMany(Arr);
 
         }
 
-/*
-{
-url:{""},
-slug:variable,
-isUsed:false
 
-}
-
- */
 
 
 
