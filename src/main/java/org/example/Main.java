@@ -13,7 +13,7 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        int capacity=1000000;
+        int capacity=10000;
         HashSet<String> hs=new HashSet<>(capacity);
         //int i,count=0;
         while(hs.size()<capacity) {
@@ -24,7 +24,7 @@ public class Main {
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("urlslugs");
-            MongoCollection<Document> collection = database.getCollection("slugs");
+            MongoCollection<Document> collection = database.getCollection("slugs5");
 
             collection.createIndex(Indexes.ascending("slugs")); //fieldname
 
@@ -53,6 +53,11 @@ public class Main {
     public static String generateString() {
         String uuid = UUID.randomUUID().toString();
         uuid=uuid.replace("-", "").substring(0,6);
+
+        while (uuid.matches("[0-9]+")) {
+            uuid = UUID.randomUUID().toString();
+            uuid = uuid.replace("-", "").substring(0, 6);
+        }
 
         return uuid;
     }
